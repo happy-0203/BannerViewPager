@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         Request request = new Request.Builder()
-                .url("http://is.snssdk.com/2/essay/discovery/v3/?")
+                .url("https://bolemart.21chinamall.com/api/goods/13024?lg=id_ID")
                 .build();
 
         okHttpClient.newCall(request).enqueue(new Callback() {
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
         BannerDataBean bannerDataBean = gson.fromJson(successData, BannerDataBean.class);
 
-        initBanner(bannerDataBean.getData().getRotate_banner().getBanners());
+        initBanner(bannerDataBean.getImages());
 
     }
 
@@ -89,17 +89,17 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param banners
      */
-    private void initBanner(final List<BannerDataBean.DataBean.RotateBannerBean.BannersBean> banners) {
+    private void initBanner(final List<String> banners) {
         mBannerView.setAdapter(new BannerAdapter() {
             @Override
             public View getView(int position) {
 
-                String url = banners.get(position).getBanner_url().getUrl_list().get(0).getUrl();
+                String url = banners.get(position);
+                if (url.startsWith("https")) {
+                    url = url.replace("https", "http");
+                }
 
                 ImageView bannerView = new ImageView(MainActivity.this);
-                //bannerView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-
                 Glide.with(MainActivity.this).load(url).into(bannerView);
 
                 return bannerView;
@@ -109,15 +109,10 @@ public class MainActivity extends AppCompatActivity {
             public int getCount() {
                 return banners.size();
             }
-
-
-            @Override
-            public String getBannerDesc(int currentPosition) {
-                return banners.get(currentPosition).getBanner_url().getTitle();
-            }
         });
-
-
+        //开始自动轮播
         mBannerView.startRoll();
+
     }
+
 }

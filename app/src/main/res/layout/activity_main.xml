@@ -8,10 +8,10 @@
 
     <com.example.cc.androidbannerviewpager.banner.BannerView
         android:id="@+id/banner_view"
+        app:bottomColor="#33ff0000"
         app:dotSize="8dp"
         app:dotDistance="5dp"
         app:dotGravity="left"
-        app:bottomColor="#FFDED3D3"
         app:dotIndicatorFocus="#f00"
         app:dotIndicatorNormal="#fff"
         android:layout_width="match_parent"

@@ -48,6 +48,8 @@ public class BannerView extends RelativeLayout {
     private int mDotGravity;
     private int mDotSize;
     private int mDotDistance;
+    private RelativeLayout mBannerBottomView;
+    private int mBannerBottomColor;
 
     public BannerView(Context context) {
         this(context, null);
@@ -62,9 +64,10 @@ public class BannerView extends RelativeLayout {
     public BannerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.mContext = context;
+        initAttribute(context, attrs);
+
         initView();
 
-        initAttribute(context, attrs);
         mDotIndicatorNormalDrawable = new ColorDrawable(Color.WHITE);
 
 
@@ -96,6 +99,9 @@ public class BannerView extends RelativeLayout {
         mDotSize = (int) typedArray.getDimension(R.styleable.BannerView_dotSize, DisplayUtils.dpToPx(8));
         //点的间距
         mDotDistance = (int) typedArray.getDimension(R.styleable.BannerView_dotDistance, DisplayUtils.dpToPx(8));
+
+        mBannerBottomColor = typedArray.getColor(R.styleable.BannerView_bottomColor, Color.TRANSPARENT);
+
         typedArray.recycle();
     }
 
@@ -109,6 +115,9 @@ public class BannerView extends RelativeLayout {
         mBannerViewPager = view.findViewById(R.id.banner_vp);
         mBannerDescTv = view.findViewById(R.id.banner_desc_tv);
         mBannerDotContainer = view.findViewById(R.id.dot_container);
+        mBannerBottomView = view.findViewById(R.id.banner_bottom_view);
+
+        mBannerBottomView.setBackgroundColor(mBannerBottomColor);
     }
 
 

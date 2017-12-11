@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <com.example.cc.androidbannerviewpager.banner.BannerView
-
         android:id="@+id/banner_view"
+        app:dotSize="8dp"
+        app:dotDistance="5dp"
+        app:dotGravity="left"
+        app:bottomColor="#FFDED3D3"
+        app:dotIndicatorFocus="#f00"
+        app:dotIndicatorNormal="#fff"
         android:layout_width="match_parent"
         android:layout_height="140dp">
 

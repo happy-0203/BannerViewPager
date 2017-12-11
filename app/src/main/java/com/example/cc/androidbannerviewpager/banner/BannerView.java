@@ -161,4 +161,15 @@ public class BannerView extends RelativeLayout {
     public void startRoll() {
         mBannerViewPager.startRoll();
     }
+
+    /**
+     * 设置滚动时间
+     * @param scrollerDuration
+     */
+    public void setScrollerDuration(int scrollerDuration){
+        mBannerViewPager.setScrollerDuration(scrollerDuration);
+    }
+
+
+
 }

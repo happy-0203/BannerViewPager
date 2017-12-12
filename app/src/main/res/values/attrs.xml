@@ -25,6 +25,10 @@
 
         <!--底部的颜色-->
         <attr name="bottomColor" format="color"></attr>
+        
+        <!--设置宽高比-->
+        <attr name="widthProportion" format="float"></attr>
+        <attr name="heightProportion" format="float"></attr>
 
     </declare-styleable>
 

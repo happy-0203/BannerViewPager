@@ -15,7 +15,9 @@
         app:dotIndicatorFocus="#f00"
         app:dotIndicatorNormal="#fff"
         android:layout_width="match_parent"
-        android:layout_height="140dp">
+        app:widthProportion="1"
+        app:heightProportion="1"
+        android:layout_height="0dp">
 
     </com.example.cc.androidbannerviewpager.banner.BannerView>
 

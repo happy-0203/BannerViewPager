@@ -50,6 +50,8 @@ public class BannerView extends RelativeLayout {
     private int mDotDistance;
     private RelativeLayout mBannerBottomView;
     private int mBannerBottomColor;
+    private float mHeightProportion;
+    private float mWidthProportion;
 
     public BannerView(Context context) {
         this(context, null);
@@ -102,6 +104,10 @@ public class BannerView extends RelativeLayout {
 
         mBannerBottomColor = typedArray.getColor(R.styleable.BannerView_bottomColor, Color.TRANSPARENT);
 
+
+        mHeightProportion = typedArray.getFloat(R.styleable.BannerView_heightProportion,1);
+        mWidthProportion = typedArray.getFloat(R.styleable.BannerView_widthProportion, 1);
+
         typedArray.recycle();
     }
 
@@ -145,6 +151,19 @@ public class BannerView extends RelativeLayout {
         //初始化的时候获取第一条描述
         String firstDesc = mAdapter.getBannerDesc(0);
         mBannerDescTv.setText(firstDesc);
+
+
+        if (mHeightProportion == 0 || mWidthProportion == 0){
+            return;
+        }
+
+        //动态指定宽高,测量宽度
+        int width = getMeasuredWidth();
+        //计算高度
+        int height = (int) (width*mHeightProportion/mWidthProportion);
+        //指定宽高
+        this.getLayoutParams().height = height;
+
     }
 
     /**

@@ -4,10 +4,12 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.cc.androidbannerviewpager.banner.BannerAdapter;
 import com.example.cc.androidbannerviewpager.banner.BannerView;
+import com.example.cc.androidbannerviewpager.banner.BannerViewPager;
 import com.example.cc.androidbannerviewpager.bean.BannerDataBean;
 import com.google.gson.Gson;
 
@@ -21,7 +23,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BannerViewPager.BannerItemClickListener {
 
     private BannerView mBannerView;
 
@@ -92,14 +94,22 @@ public class MainActivity extends AppCompatActivity {
     private void initBanner(final List<String> banners) {
         mBannerView.setAdapter(new BannerAdapter() {
             @Override
-            public View getView(int position) {
+            public View getView(int position,View convertView) {
 
                 String url = banners.get(position);
                 if (url.startsWith("https")) {
                     url = url.replace("https", "http");
                 }
 
-                ImageView bannerView = new ImageView(MainActivity.this);
+                ImageView bannerView = null;
+
+                if (convertView == null){
+                     bannerView = new ImageView(MainActivity.this);
+                }else {
+                    bannerView = (ImageView) convertView;
+                }
+
+
                 Glide.with(MainActivity.this).load(url).into(bannerView);
 
                 return bannerView;
@@ -113,6 +123,13 @@ public class MainActivity extends AppCompatActivity {
         //开始自动轮播
         mBannerView.startRoll();
 
+
+        mBannerView.setBannerViewItemClickListener(this);
+
     }
 
+    @Override
+    public void click(int position) {
+        Toast.makeText(this,"position:"+position,Toast.LENGTH_SHORT).show();
+    }
 }

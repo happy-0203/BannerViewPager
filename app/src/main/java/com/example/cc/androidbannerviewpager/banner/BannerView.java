@@ -249,4 +249,11 @@ public class BannerView extends RelativeLayout {
         }
         return Gravity.LEFT;
     }
+
+
+
+    public void setBannerViewItemClickListener(BannerViewPager.BannerItemClickListener listener){
+        mBannerViewPager.setBannerItemClickListener(listener);
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.example.cc.androidbannerviewpager.banner;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -7,10 +9,13 @@ import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by cc on 2017/12/8.
@@ -28,6 +33,9 @@ public class BannerViewPager extends ViewPager {
     private long mCutDownTime = 3500;
 
 
+    //内存优化,界面复用
+    private List<View> mConvertViews;
+
     //注意这里会造成内存泄漏,,如果不销毁mHandler会导致Activity不能销毁.
 
     private Handler mHandler = new Handler() {
@@ -40,6 +48,8 @@ public class BannerViewPager extends ViewPager {
         }
     };
 
+
+    private Activity mActivity;
 
     //自定义BannerViewPager -- 自定义Adapter
     private BannerAdapter mAdapter;
@@ -54,6 +64,9 @@ public class BannerViewPager extends ViewPager {
 
     public BannerViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        mActivity = (Activity) context;
+
         init(context);
 
 
@@ -73,6 +86,9 @@ public class BannerViewPager extends ViewPager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
+        mConvertViews = new ArrayList<>();
     }
 
     /**
@@ -91,6 +107,10 @@ public class BannerViewPager extends ViewPager {
 
         //设置ViewPager的Adapter
         setAdapter(new BannerPagerAdapter());
+
+
+        mActivity.getApplication().
+                registerActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
     }
 
 
@@ -98,6 +118,8 @@ public class BannerViewPager extends ViewPager {
      * 设置开始自动轮播
      */
     public void startRoll() {
+
+        Log.d("123", "startRoll: ");
 
         mHandler.removeMessages(SCROLL_MSG);
 
@@ -114,6 +136,8 @@ public class BannerViewPager extends ViewPager {
         super.onDetachedFromWindow();
         mHandler.removeCallbacksAndMessages(null);
         mHandler = null;
+        //接触绑定
+        mActivity.getApplication().unregisterActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
     }
 
     private class BannerPagerAdapter extends PagerAdapter {
@@ -137,18 +161,31 @@ public class BannerViewPager extends ViewPager {
          * @return
          */
         @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+        public Object instantiateItem(ViewGroup container, final int position) {
 
             //采用Adapter设置模式,来完成用户自定义条目
 
 
-            View bannerItemView = mAdapter.getView(position % mAdapter.getCount());
+            View bannerItemView = mAdapter.getView(position % mAdapter.getCount(), getConverView());
             container.addView(bannerItemView);
+
+            //设置点击事件
+            bannerItemView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mBannerItemClickListener != null) {
+                        mBannerItemClickListener.click(position % mAdapter.getCount());
+                    }
+                }
+            });
+
+
             return bannerItemView;
         }
 
         /**
          * 销毁条目回调的方法
+         *
          * @param container
          * @param position
          * @param object
@@ -156,7 +193,57 @@ public class BannerViewPager extends ViewPager {
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView((View) object);
-            object = null;
+
+            mConvertViews.add((View) object);
         }
     }
+
+    /**
+     * 获取复用界面
+     *
+     * @return
+     */
+    private View getConverView() {
+
+        for (View convertView : mConvertViews) {
+            //如果移除了它的父布局就为null
+            if (convertView.getParent() == null) {
+                return convertView;
+            }
+        }
+        return null;
+    }
+
+    private BannerItemClickListener mBannerItemClickListener;
+
+    public void setBannerItemClickListener(BannerItemClickListener bannerItemClickListener) {
+        this.mBannerItemClickListener = bannerItemClickListener;
+    }
+
+
+    public interface BannerItemClickListener {
+        void click(int position);
+    }
+
+
+   private Application.ActivityLifecycleCallbacks mActivityLifecycleCallbacks =
+            new DefaultActivityLifecycleCallbacks() {
+        @Override
+        public void onActivityResumed(Activity activity) {
+            //是不是当前的Activity
+            if (activity == getContext()) {
+                //开始轮播
+                mHandler.sendEmptyMessageDelayed(SCROLL_MSG, mCutDownTime);
+            }
+        }
+
+        @Override
+        public void onActivityPaused(Activity activity) {
+            if (activity == getContext()) {
+                //停止轮播
+                mHandler.removeMessages(SCROLL_MSG);
+            }
+        }
+    };
+
 }

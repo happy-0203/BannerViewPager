@@ -63,7 +63,7 @@ public class DotIndicatorView extends View {
     private Bitmap getCircleBitmap(Bitmap bitmap) {
 
         //创建Bitmap
-        Bitmap circleBitmap = Bitmap.createBitmap(getMeasuredWidth(),getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap circleBitmap = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
 
         //创建画布
         Canvas canvas = new Canvas(circleBitmap);
@@ -77,13 +77,17 @@ public class DotIndicatorView extends View {
         paint.setDither(true);
 
         //在画布上画一个圆
-        canvas.drawCircle(getMeasuredWidth()/2,getMeasuredHeight()/2,getMeasuredWidth()/2,paint);
+        canvas.drawCircle(getMeasuredWidth() / 2, getMeasuredHeight() / 2, getMeasuredWidth() / 2, paint);
 
         //取圆和bitmap的交集
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
 
         //再把bitmap画到圆上面
-        canvas.drawBitmap(bitmap,0,0,paint);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+
+        //内存优化,回收bitmap
+        bitmap.recycle();
+        bitmap = null;
 
         return circleBitmap;
     }
